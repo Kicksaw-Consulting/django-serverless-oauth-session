@@ -42,12 +42,14 @@ class OAuthToken(Model):
         if self._refresh_token:
             return decrypt_value(self._refresh_token)
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-        if not self.exists():
-            self.create_table(read_capacity_units=1, write_capacity_units=1, wait=True)
+    @classmethod
+    def create_if_non_existent(cls):
+        if not cls.exists():
+            cls.create_table(read_capacity_units=1, write_capacity_units=1, wait=True)
 
     class Meta:
         table_name = settings.OAUTH_TOKEN_TABLE_NAME
         region = settings.AWS_REGION
+
+
+OAuthToken.create_if_non_existent()
