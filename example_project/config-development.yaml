@@ -1,0 +1,8 @@
+AWS_REGION: us-west-2
+GITHUB_CLIENT_ID:
+  secret: true
+  value: gAAAAABgaxa4OxhiVL8BVabvCpBYQ-Bfe_FKVr-2oajFIXfCX0PaA_Hv47mSH32HjB582IDF3uffo-L_B9lGU34q20gM2vL2E4N8XULzznjTJeCLm-lBKVU=
+GITHUB_CLIENT_SECRET:
+  secret: true
+  value: gAAAAABgaxbhMfiBTJv-fZ7LJl_9iYjwTk4WxPOCk16LHTPIIqeQFMjloTmyPEqlAiVH2KNEc2QMf-qcWaeMtRelcT8YSPpe2m42SjuJQdUuSSaZ3v2dPlSABwFL589k5E4RWYPca3eD
+OAUTH_TOKEN_TABLE_NAME: django-serverless-oauth-table

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "django-serverless-oauth-client"
+version = "0.1.0"
+description = "An extension of Authlib which stores tokens in AWS's DynamoDB. Requires your project to use django-configration-management. This is a use-case-specific library, and is intended for backend integrations that must authenticate with an API which only supports OAuth2 for its authentication protocol."
+authors = ["Alex Drozd <drozdster@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pynamodb = "^5.0.3"
+django-configuration-management = "^0.3.4"
+Authlib = "^0.15.3"
+pynamodb-attributes = "^0.3.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
