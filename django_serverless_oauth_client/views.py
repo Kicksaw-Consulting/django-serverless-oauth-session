@@ -1,46 +1,48 @@
-from typing import Callable
-
 from django.conf import settings
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.utils.module_loading import import_string
-
-from authlib.integrations.django_client import OAuth
 
 from django_serverless_oauth_client.models import OAuthToken
-
-
-oauth = OAuth()
-oauth.register(
-    name="sls",
-)
+from django_serverless_oauth_client.oauth import get_oauth_session
 
 
 def oauth_login(request):
+    client = get_oauth_session(pull_token=False)
     redirect_uri = request.build_absolute_uri(reverse("sls-callback"))
-    return oauth.sls.authorize_redirect(request, redirect_uri)
+    uri, _ = client.create_authorization_url(
+        settings.OAUTH_AUTHORIZE_URL, redirect_uri=redirect_uri
+    )
+    return redirect(uri)
 
 
 def callback(request):
-    token = oauth.sls.authorize_access_token(request)
-    if getattr(settings, "CALLBACK_FUNCTION"):
-        custom_callback: Callable = import_string(settings.CALLBACK_FUNCTION)
-        return custom_callback(request, token)
+    client = get_oauth_session(pull_token=False)
+
+    token = client.fetch_token(
+        settings.OAUTH_ACCESS_TOKEN_URL,
+        authorization_response=request.build_absolute_uri(request),
+    )
+
+    client = get_oauth_session(token=token, pull_token=False)
 
     assert getattr(
         settings, "IDENTIFIER"
-    ), f"If not using CALLBACK_FUNCTION you must specify an identifier in the settings"
+    ), f"You must specify an identifier in the settings"
 
     timestamp = timezone.now()
 
     pynamo_token = OAuthToken(str(settings.IDENTIFIER))
+
+    if getattr(settings, "OAUTH_USER_INFO_URL"):
+        user_info = client.get(settings.OAUTH_USER_INFO_URL)
+        pynamo_token.user_info = user_info.json()
+
     pynamo_token.token_type = token["token_type"]
     pynamo_token.scope = token["scope"]
     pynamo_token.set_access_token(token["access_token"])
     pynamo_token.set_refresh_token(token.get("refresh_token"))
-    pynamo_token.expires_in = token.get("expires_in")
-    pynamo_token.user_info = oauth.sls.parse_id_token(request, token)
+    pynamo_token.expires_at = token.get("expires_at")
     pynamo_token.created_at = timestamp
     pynamo_token.updated_at = timestamp
     pynamo_token.save()

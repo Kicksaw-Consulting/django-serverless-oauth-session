@@ -18,7 +18,7 @@ class OAuthToken(Model):
     scope = UnicodeAttribute(null=True)
     _access_token = UnicodeAttribute()
     _refresh_token = UnicodeAttribute(null=True)
-    expires_in = NumberAttribute(null=True)
+    expires_at = NumberAttribute(null=True)
     ttl = NumberAttribute(null=True)
 
     user_info = JSONAttribute(null=True)
@@ -41,6 +41,14 @@ class OAuthToken(Model):
     def refresh_token(self):
         if self._refresh_token:
             return decrypt_value(self._refresh_token)
+
+    def to_token(self):
+        return dict(
+            access_token=self.access_token,
+            token_type=self.token_type,
+            refresh_token=self.refresh_token,
+            expires_at=self.expires_at,
+        )
 
     @classmethod
     def create_if_non_existent(cls):

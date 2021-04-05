@@ -26,10 +26,26 @@
       >
     </nav>
     <div class="container pt-5">
-      <p>Welcome</p>
-      <a href="{% url 'sls-oauth' %}" class="btn btn-primary">Click to OAuth</a>
-      <br /><br />
-      <a href="{% url 'repos' %}" class="btn btn-primary">List Repos</a>
+      <p>Repos</p>
+      <ul>
+            {{ repo }}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for repo in repos %}
+                <tr>
+                  <th scope="row">{{ repo.full_name }}</th>
+                  <td>{{ repo.description }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+      </ul>
     </div>
   </body>
 </html>

@@ -100,22 +100,18 @@ current_module = sys.modules[__name__]
 inject_config("development", current_module)
 
 
-# AUTHLIB CLIENTS
-AUTHLIB_OAUTH_CLIENTS = {
-    "sls": {
-        "client_id": current_module.GITHUB_CLIENT_ID,
-        "client_secret": current_module.GITHUB_CLIENT_SECRET,
-        "access_token_url": "https://github.com/login/oauth/access_token",
-        "authorize_url": "https://github.com/login/oauth/authorize",
-        "api_base_url": "https://api.github.com/",
-        "client_kwargs": {"scope": "user:email"},
-    }
-}
+# django-serverless-oauth-client
+CALLBACK_FUNCTION = "frontend.callback.handle"
+IDENTIFIER = "30541183"
+
+
+# AUTHLIB CLIENT
+OAUTH_CLIENT_ID = current_module.GITHUB_CLIENT_ID
+OAUTH_CLIENT_SECRET = current_module.GITHUB_CLIENT_SECRET
+OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token"
+OAUTH_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
+OAUTH_USER_INFO_URL = "https://api.github.com/user"
+OAUTH_SCOPE = "user:email"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-
-
-# django-serverless-oauth-client
-CALLBACK_FUNCTION = "frontend.callback.handle"
-IDENTIFIER = "123"
