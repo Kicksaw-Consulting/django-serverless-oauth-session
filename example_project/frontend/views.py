@@ -4,10 +4,7 @@ from django_serverless_oauth_session.oauth import get_oauth_session
 
 
 def index(request):
-    return render(
-        request,
-        "index.html",
-    )
+    return render(request, "index.html")
 
 
 def repos(request):

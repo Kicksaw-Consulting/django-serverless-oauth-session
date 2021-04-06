@@ -31,7 +31,9 @@ INSTALLED_APPS = [
 
 **NOTE**
 
-By registering this app, the DynamoDB table will be created in AWS on the start-up of the app if it doesn't already exist
+By registering this app, the DynamoDB table will be created in AWS on the start-up of the app if it doesn't already exist.
+
+Also, your environment must have your AWS credentials ready to go, just like you would have them set-up for boto3.
 
 ---
 
@@ -43,20 +45,16 @@ Set a `LOGIN_REDIRECT_URL`
 LOGIN_REDIRECT_URL = "/"
 ```
 
-Set some identifier with which this library will use to look up your token from DynamoDB (this part
-is most likely to change in a future version)
+And finally, fill in your OAuth provider's details, as well as some info for AWS
 
 ```python
 # settings.py
 
-IDENTIFIER = "i dont actually matter, but I'm required"
-```
+# AWS stuff
+OAUTH_TOKEN_TABLE_NAME = "some-table-name"
+AWS_REGION = "us-west-2"
 
-And finally, fill in your OAuth provider's details
-
-```python
-# settings.py
-
+# OAuth app stuff
 OAUTH_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
 OAUTH_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
 OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token"
@@ -104,9 +102,7 @@ def repos(request):
     return render(request, "repos.html", {"repos": repos})
 ```
 
-This allows you to simply import this function and start making calls to your API in backend scripts and the like. Handling
-multiple users may be looked at in a future release, but since this package is really just about getting the token so your
-CRONs or whatnot can hit the API in question, there's probably not a need for it.
+This allows you to simply import this function and start making calls to your API in backend scripts and the like.
 
 Please refer to the documentation for [requests](https://docs.python-requests.org/en/master/) for more info on how to use
 the session.

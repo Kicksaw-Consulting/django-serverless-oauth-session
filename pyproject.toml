@@ -14,12 +14,11 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 pynamodb = "^5.0.3"
-django-configuration-management = "^0.3.4"
 Authlib = "^0.15.3"
-pynamodb-attributes = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+django-configuration-management = "^0.3.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

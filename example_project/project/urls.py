@@ -4,7 +4,7 @@ from django.urls import include, path
 urlpatterns = [
     path("", include("frontend.urls")),
     path(
-        "django-serverless-oauth-session/",
+        "oauth/",
         include("django_serverless_oauth_session.urls"),
     ),
     path("admin/", admin.site.urls),
