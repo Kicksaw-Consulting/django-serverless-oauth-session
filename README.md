@@ -16,14 +16,14 @@ Taking a looking at the example project will probably tell you everything you ne
 
 ## settings.py
 
-In your `settings.py`, add `django_serverless_oauth_client` to your `INSTALLED_APPS`
+In your `settings.py`, add `django_serverless_oauth_session` to your `INSTALLED_APPS`
 
 ```python
 # settings.py
 
 INSTALLED_APPS = [
     # ...
-    "django_serverless_oauth_client",
+    "django_serverless_oauth_session",
 ]
 ```
 
@@ -74,7 +74,7 @@ Register the following urls in your root url conf
 
 path(
     "oauth/",
-    include("django_serverless_oauth_client.urls"),
+    include("django_serverless_oauth_session.urls"),
 ),
 ```
 
@@ -86,7 +86,7 @@ After all that set-up, you probably want to use it. The above enables to you gra
 that handles authenticated and token refreshing for you.
 
 ```python
-from django_serverless_oauth_client.oauth import get_oauth_session
+from django_serverless_oauth_session.oauth import get_oauth_session
 
 def repos(request):
     client = get_oauth_session()

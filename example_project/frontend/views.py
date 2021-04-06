@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django_serverless_oauth_client.oauth import get_oauth_session
+from django_serverless_oauth_session.oauth import get_oauth_session
 
 
 def index(request):

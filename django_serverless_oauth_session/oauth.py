@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from authlib.integrations.requests_client import OAuth2Session
 
-from django_serverless_oauth_client.models import OAuthToken
+from django_serverless_oauth_session.models import OAuthToken
 
 
 def fetch_token() -> dict:

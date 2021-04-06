@@ -3,8 +3,8 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils import timezone
 
-from django_serverless_oauth_client.models import OAuthToken
-from django_serverless_oauth_client.oauth import (
+from django_serverless_oauth_session.models import OAuthToken
+from django_serverless_oauth_session.oauth import (
     get_oauth_session,
     get_tokenless_oauth_session,
     update_token,

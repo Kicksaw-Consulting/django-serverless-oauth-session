@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_serverless_oauth_client",
+    "django_serverless_oauth_session",
     "frontend",
 ]
 
@@ -94,7 +94,7 @@ current_module = sys.modules[__name__]
 inject_config("development", current_module)
 
 
-# django-serverless-oauth-client
+# django-serverless-oauth-session
 IDENTIFIER = "i dont matter"  # since this is for a backend integration, we expect just one user to auth
 OAUTH_CLIENT_ID = current_module.GITHUB_CLIENT_ID
 OAUTH_CLIENT_SECRET = current_module.GITHUB_CLIENT_SECRET
