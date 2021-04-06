@@ -34,6 +34,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "project.urls"
 
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -56,15 +59,6 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
-}
-
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
     }
 }
 
@@ -101,17 +95,10 @@ inject_config("development", current_module)
 
 
 # django-serverless-oauth-client
-CALLBACK_FUNCTION = "frontend.callback.handle"
-IDENTIFIER = "30541183"
-
-
-# AUTHLIB CLIENT
+IDENTIFIER = "i dont matter"  # since this is for a backend integration, we expect just one user to auth
 OAUTH_CLIENT_ID = current_module.GITHUB_CLIENT_ID
 OAUTH_CLIENT_SECRET = current_module.GITHUB_CLIENT_SECRET
 OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token"
 OAUTH_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 OAUTH_USER_INFO_URL = "https://api.github.com/user"
 OAUTH_SCOPE = "user:email"
-
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"

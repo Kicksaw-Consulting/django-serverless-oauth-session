@@ -11,7 +11,7 @@ def index(request):
 
 
 def repos(request):
-    client = get_oauth_session(pull_token=True)
+    client = get_oauth_session()
     response = client.get("https://api.github.com/user/repos")
     repos = response.json()
     return render(request, "repos.html", {"repos": repos})
