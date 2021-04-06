@@ -95,7 +95,6 @@ inject_config("development", current_module)
 
 
 # django-serverless-oauth-session
-IDENTIFIER = "i dont matter"  # since this is for a backend integration, we expect just one user to auth
 OAUTH_CLIENT_ID = current_module.GITHUB_CLIENT_ID
 OAUTH_CLIENT_SECRET = current_module.GITHUB_CLIENT_SECRET
 OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token"

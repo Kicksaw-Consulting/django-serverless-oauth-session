@@ -1,11 +1,36 @@
+import datetime
+
 from django.conf import settings
+from django.utils import timezone
 
-from django_configuration_management.secrets import encrypt_value, decrypt_value
-
-from pynamodb.attributes import UnicodeAttribute, NumberAttribute, JSONAttribute
+from pynamodb.attributes import (
+    UnicodeAttribute,
+    NumberAttribute,
+    JSONAttribute,
+    TTLAttribute,
+    UTCDateTimeAttribute,
+)
+from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
 from pynamodb.models import Model
 
-from pynamodb_attributes import TimestampAttribute
+
+ALIVE = "ALIVE"
+DEAD = "DEAD"
+
+
+class TokensByState(GlobalSecondaryIndex):
+    """
+    Query sessions by state
+    """
+
+    class Meta:
+        index_name = "by-state"
+        projection = AllProjection()
+        read_capacity_units = 1
+        write_capacity_units = 1
+
+    state = UnicodeAttribute(default=ALIVE, hash_key=True)
+    created_at = UTCDateTimeAttribute(range_key=True)
 
 
 class OAuthToken(Model):
@@ -13,42 +38,50 @@ class OAuthToken(Model):
     Stores token data from some OAuth provider
     """
 
-    pk = UnicodeAttribute(hash_key=True)
-    token_type = UnicodeAttribute(null=True)
-    scope = UnicodeAttribute(null=True)
-    _access_token = UnicodeAttribute()
-    _refresh_token = UnicodeAttribute(null=True)
-    expires_at = NumberAttribute(null=True)
-    ttl = NumberAttribute(null=True)
+    ALIVE = ALIVE
+    DEAD = DEAD
 
+    access_token = UnicodeAttribute(hash_key=True)
+    refresh_token = UnicodeAttribute(null=True)
+    token_type = UnicodeAttribute(null=True)
+
+    # Consistency would be too easy
+    expires_in = NumberAttribute(null=True)
+    expires_at = NumberAttribute(null=True)
+
+    scope = UnicodeAttribute(null=True)
     user_info = JSONAttribute(null=True)
 
-    updated_at = TimestampAttribute(null=True)
-    created_at = TimestampAttribute(null=True)
+    state_index = TokensByState()
+    state = UnicodeAttribute(default=ALIVE)
 
-    def set_access_token(self, access_token: str):
-        self._access_token = encrypt_value(access_token)
+    updated_at = UTCDateTimeAttribute()
+    created_at = UTCDateTimeAttribute(range_key=True)
+    ttl = TTLAttribute(null=True)
+
+    def save(self, *args, **kwargs):
+        timestamp = timezone.now()
+        if not self.created_at:
+            self.created_at = timestamp
+        self.updated_at = timestamp
+        super().save(*args, **kwargs)
+
+    def update(self, *args, **kwargs):
+        self.updated_at = timezone.now()
+        super().save(*args, **kwargs)
 
     @property
-    def access_token(self):
-        return decrypt_value(self._access_token)
-
-    def set_refresh_token(self, refresh_token: str):
-        if refresh_token:
-            self._refresh_token = encrypt_value(refresh_token)
-
-    @property
-    def refresh_token(self):
-        if self._refresh_token:
-            return decrypt_value(self._refresh_token)
-
-    def to_token(self):
+    def session_data(self):
         return dict(
             access_token=self.access_token,
             token_type=self.token_type,
             refresh_token=self.refresh_token,
             expires_at=self.expires_at,
+            expires_in=self.expires_in,
         )
+
+    def set_expiration(self):
+        self.ttl = datetime.timedelta(days=30)
 
     @classmethod
     def create_if_non_existent(cls):
