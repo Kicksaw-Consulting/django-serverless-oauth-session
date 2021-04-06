@@ -11,7 +11,7 @@ from django_serverless_oauth_client.oauth import (
 )
 
 
-def oauth_login(request):
+def login(request):
     client = get_tokenless_oauth_session()
     redirect_uri = request.build_absolute_uri(reverse("sls-callback"))
     uri, _ = client.create_authorization_url(

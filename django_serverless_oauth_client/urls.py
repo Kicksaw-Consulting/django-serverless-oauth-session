@@ -1,8 +1,8 @@
 from django.urls import path
 
-from django_serverless_oauth_client.views import oauth_login, callback
+from django_serverless_oauth_client.views import login, callback
 
 urlpatterns = [
-    path("oauth/", oauth_login, name="sls-oauth"),
+    path("login/", login, name="sls-login"),
     path("callback/", callback, name="sls-callback"),
 ]
