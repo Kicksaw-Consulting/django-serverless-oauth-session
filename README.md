@@ -80,6 +80,15 @@ path(
 
 Support for custom URL callbacks will be worked on in a future version.
 
+## Getting the token
+
+Somewhere in your site, you'll need a view with a button with which users can click to get started. Put
+this in your template to kick off the OAuth process.
+
+```html
+<a href="{% url 'sls-login' %}" class="btn btn-primary">Click to OAuth</a>
+```
+
 ## Using it!
 
 After all that set-up, you probably want to use it. The above enables to you grab an authenticated `requests` session
