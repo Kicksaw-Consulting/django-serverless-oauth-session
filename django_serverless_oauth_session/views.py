@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 
 from django_serverless_oauth_session.oauth import (
     get_tokenless_oauth_session,
-    create_new,
+    update_main_token,
 )
 
 
@@ -25,6 +25,6 @@ def callback(request):
         authorization_response=request.build_absolute_uri(request),
     )
 
-    create_new(token)
+    update_main_token(token)
 
     return redirect(settings.LOGIN_REDIRECT_URL)

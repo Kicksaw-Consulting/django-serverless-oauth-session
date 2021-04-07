@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from django_serverless_oauth_session.oauth import get_oauth_session
+from django_serverless_oauth_session import get_oauth_session
 
 
 def index(request):
@@ -8,7 +8,7 @@ def index(request):
 
 
 def repos(request):
-    client = get_oauth_session()
-    response = client.get("https://api.github.com/user/repos")
+    session = get_oauth_session()
+    response = session.get("https://api.github.com/user/repos")
     repos = response.json()
     return render(request, "repos.html", {"repos": repos})

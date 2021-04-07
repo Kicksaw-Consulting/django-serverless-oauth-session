@@ -21,36 +21,37 @@ def fetch_token() -> dict:
         )
 
 
-def update_token(token: dict, refresh_token=None, access_token=None):
-    pynamo_token = next(OAuthToken.query(access_token, limit=1))
-    assert refresh_token == pynamo_token.refresh_token, f"Refresh tokens don't match"
-    pynamo_token.state = OAuthToken.DEAD
-    pynamo_token.set_expiration()
-    pynamo_token.save()
+def update_main_token(token: dict, **kwargs):
+    """
+    Marks all currently living tokens as dead and adds a new token,
+    which serves as the "main" token the oauth session will use
+    """
+    past_tokens = OAuthToken.state_index.query(OAuthToken.ALIVE)
+    with OAuthToken.batch_write() as batch:
+        for past_token in past_tokens:
+            past_token: OAuthToken
+            past_token.state = OAuthToken.DEAD
+            past_token.set_expiration()
+            past_token.set_updated_at()
+            batch.save(past_token)
     create_new(token)
 
 
-def update_session_data(token: dict, pynamo_token: OAuthToken):
+def create_new(token: dict):
+    pynamo_token = OAuthToken()
+
+    if getattr(settings, "OAUTH_USER_INFO_URL"):
+        client = get_oauth_session(token=token)
+        user_info = client.get(settings.OAUTH_USER_INFO_URL)
+        pynamo_token.user_info = user_info.json()
+
     pynamo_token.access_token = token["access_token"]
     pynamo_token.refresh_token = token.get("refresh_token")
     pynamo_token.expires_in = token.get("expires_in")
     pynamo_token.expires_at = token.get("expires_at")
-    pynamo_token.save()
-
-
-def create_new(token: dict):
-    client = get_oauth_session(token=token)
-
-    pynamo_token = OAuthToken()
-
-    if getattr(settings, "OAUTH_USER_INFO_URL"):
-        user_info = client.get(settings.OAUTH_USER_INFO_URL)
-        pynamo_token.user_info = user_info.json()
-
     pynamo_token.token_type = token["token_type"]
     pynamo_token.scope = token["scope"]
-
-    update_session_data(token, pynamo_token)
+    pynamo_token.save()
 
 
 def get_tokenless_oauth_session():
@@ -66,6 +67,9 @@ def get_tokenless_oauth_session():
 
 
 def get_oauth_session(token: dict = None):
+    """
+    Returns a requests session pre-loaded with the OAuth token for authentication
+    """
     if not token:
         fetched_token = fetch_token()
         token = fetched_token.session_data
@@ -74,6 +78,6 @@ def get_oauth_session(token: dict = None):
         settings.OAUTH_CLIENT_SECRET,
         scope=settings.OAUTH_SCOPE,
         token=token,
-        update_token=update_token,
+        update_token=update_main_token,
     )
     return client

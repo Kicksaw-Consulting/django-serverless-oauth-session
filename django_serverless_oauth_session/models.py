@@ -70,6 +70,12 @@ class OAuthToken(Model):
         self.updated_at = timezone.now()
         super().save(*args, **kwargs)
 
+    def set_updated_at(self, *args, **kwargs):
+        self.updated_at = timezone.now()
+
+    def set_expiration(self):
+        self.ttl = datetime.timedelta(days=30)
+
     @property
     def session_data(self):
         return dict(
@@ -79,9 +85,6 @@ class OAuthToken(Model):
             expires_at=self.expires_at,
             expires_in=self.expires_in,
         )
-
-    def set_expiration(self):
-        self.ttl = datetime.timedelta(days=30)
 
     @classmethod
     def create_if_non_existent(cls):
