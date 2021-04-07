@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-serverless-oauth-session"
-version = "0.2.1"
+version = "0.2.2"
 description = "Provides a Django app for storing tokens in AWS's DynamoDB, and providing a convenient requests session which uses the token. This is a use-case-specific library, and is intended for backend integrations that must authenticate with an API which only supports OAuth2 for its authentication protocol."
 authors = ["Alex Drozd <drozdster@gmail.com>"]
 license = "MIT"

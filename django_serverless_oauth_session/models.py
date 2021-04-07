@@ -96,4 +96,10 @@ class OAuthToken(Model):
         region = settings.AWS_REGION
 
 
-OAuthToken.create_if_non_existent()
+if (
+    not hasattr(
+        settings, "OAUTH_TOKEN_TABLE_CREATE"
+    )  # default to creating automatically
+    or settings.OAUTH_TOKEN_TABLE_CREATE
+):
+    OAuthToken.create_if_non_existent()

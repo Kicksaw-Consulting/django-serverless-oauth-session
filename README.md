@@ -35,6 +35,8 @@ INSTALLED_APPS = [
 **NOTE**
 
 By registering this app, the DynamoDB table will be created in AWS on the start-up of the app if it doesn't already exist.
+To turn this off, set `OAUTH_TOKEN_TABLE_CREATE = False` in `settings.py`. This might be useful if you need to add KMS keys
+to your table, or you'd rather provision in some other way.
 
 Also, your environment must have your AWS credentials ready to go, just like you would have them set-up for boto3.
 
