@@ -8,7 +8,10 @@ This is a use-case specific library, enabling you to quickly get up and running 
 
 This package assumes you're not using Django's ORM (a SQL database) and that you are using AWS. If so, the point is to spin up
 a DynamoDB table with which your application can store an OAuth token from an authenticating user. This table will only have
-one row, the token of the most recent user to authenticate.
+one active token at a time, which is the token of the most recent user to authenticate. Past tokens are kept around for up to
+one month.
+
+This package is certainly not intended for a user-facing web-application.
 
 # Usage
 
@@ -93,11 +96,11 @@ After all that set-up, you probably want to use it. The above enables to you gra
 that handles authenticated and token refreshing for you.
 
 ```python
-from django_serverless_oauth_session.oauth import get_oauth_session
+from django_serverless_oauth_session import get_oauth_session
 
 def repos(request):
-    client = get_oauth_session()
-    response = client.get("https://api.github.com/user/repos")
+    session = get_oauth_session()
+    response = session.get("https://api.github.com/user/repos")
     repos = response.json()
     return render(request, "repos.html", {"repos": repos})
 ```
