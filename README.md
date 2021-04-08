@@ -82,6 +82,8 @@ urlpatterns = [
 ]
 ```
 
+The callback url will be the above, appended with `callback`, e.g., `http://localhost:8000/oauth/callback`
+
 Support for custom URL callbacks will be worked on in a future version.
 
 ## Getting the token
