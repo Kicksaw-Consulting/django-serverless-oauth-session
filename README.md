@@ -74,11 +74,12 @@ Register the following urls in your root url conf
 
 ```python
 # urls.py
+from django.urls import include, path
 
-path(
-    "oauth/",
-    include("django_serverless_oauth_session.urls"),
-),
+urlpatterns = [
+    # ...
+    path("oauth/", include("django_serverless_oauth_session.urls")),
+]
 ```
 
 Support for custom URL callbacks will be worked on in a future version.
