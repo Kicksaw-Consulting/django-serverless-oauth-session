@@ -51,7 +51,7 @@ def create_new(token: dict):
     pynamo_token.expires_in = token.get("expires_in")
     pynamo_token.expires_at = token.get("expires_at")
     pynamo_token.token_type = token["token_type"]
-    pynamo_token.scope = token["scope"]
+    pynamo_token.scope = token.get("scope")
     pynamo_token.save()
 
 
