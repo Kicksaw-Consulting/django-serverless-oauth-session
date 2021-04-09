@@ -1,3 +1,4 @@
+from django_serverless_oauth_session.utils import get_optional_setting
 from django.conf import settings
 
 from authlib.integrations.requests_client import OAuth2Session
@@ -40,7 +41,7 @@ def update_main_token(token: dict, **kwargs):
 def create_new(token: dict):
     pynamo_token = OAuthToken()
 
-    if getattr(settings, "OAUTH_USER_INFO_URL"):
+    if get_optional_setting("OAUTH_USER_INFO_URL", default=False):
         client = get_oauth_session(token=token)
         user_info = client.get(settings.OAUTH_USER_INFO_URL)
         pynamo_token.user_info = user_info.json()
