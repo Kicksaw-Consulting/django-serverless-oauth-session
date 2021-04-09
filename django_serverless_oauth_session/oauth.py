@@ -1,9 +1,9 @@
-from django_serverless_oauth_session.utils import get_optional_setting
 from django.conf import settings
 
 from authlib.integrations.requests_client import OAuth2Session
 
 from django_serverless_oauth_session.models import OAuthToken
+from django_serverless_oauth_session.utils import get_optional_setting
 
 
 def fetch_token() -> dict:
@@ -74,12 +74,17 @@ def get_oauth_session(token: dict = None):
     if not token:
         fetched_token = fetch_token()
         token = fetched_token.session_data
+
+    session_kwargs = {
+        "token": token,
+        "update_token": update_main_token,
+        "token_endpoint": settings.OAUTH_ACCESS_TOKEN_URL,
+    }
+
+    if get_optional_setting("OAUTH_INCLUDE_SCOPE_IN_REFRESH", default=False):
+        session_kwargs["scope"] = settings.OAUTH_SCOPE
+
     client = OAuth2Session(
-        settings.OAUTH_CLIENT_ID,
-        settings.OAUTH_CLIENT_SECRET,
-        scope=settings.OAUTH_SCOPE,
-        token=token,
-        update_token=update_main_token,
-        token_endpoint=settings.OAUTH_ACCESS_TOKEN_URL,
+        settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
     )
     return client
