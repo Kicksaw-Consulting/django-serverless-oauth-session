@@ -13,6 +13,8 @@ from pynamodb.attributes import (
 from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
 from pynamodb.models import Model
 
+from django_serverless_oauth_session.utils import get_optional_setting
+
 
 ALIVE = "ALIVE"
 DEAD = "DEAD"
@@ -96,10 +98,6 @@ class OAuthToken(Model):
         region = settings.AWS_REGION
 
 
-if (
-    not hasattr(
-        settings, "OAUTH_TOKEN_TABLE_CREATE"
-    )  # default to creating automatically
-    or settings.OAUTH_TOKEN_TABLE_CREATE
-):
+# default to creating automatically
+if get_optional_setting("OAUTH_TOKEN_TABLE_CREATE", default=True):
     OAuthToken.create_if_non_existent()

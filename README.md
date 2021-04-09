@@ -66,6 +66,12 @@ OAUTH_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token"
 OAUTH_AUTHORIZE_URL = "https://github.com/login/oauth/authorize"
 OAUTH_USER_INFO_URL = "https://api.github.com/user"
 OAUTH_SCOPE = "user:email"
+
+# optional OAuth stuff
+OAUTH_ACCESS_TOKEN_KWARGS = {
+    "client_id": OAUTH_CLIENT_ID,
+    "client_secret": OAUTH_CLIENT_SECRET
+}  # passed when trying to obtain the token
 ```
 
 ## urls
