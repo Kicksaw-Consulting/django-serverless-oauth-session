@@ -80,5 +80,6 @@ def get_oauth_session(token: dict = None):
         scope=settings.OAUTH_SCOPE,
         token=token,
         update_token=update_main_token,
+        token_endpoint=settings.OAUTH_ACCESS_TOKEN_URL,
     )
     return client
