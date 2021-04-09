@@ -72,6 +72,12 @@ OAUTH_ACCESS_TOKEN_KWARGS = {
     "client_id": OAUTH_CLIENT_ID,
     "client_secret": OAUTH_CLIENT_SECRET
 }  # passed when trying to obtain the token
+
+# if the state should be verified in the callback, client-side
+OAUTH_STATE_CLIENT_CHECK = True
+# if the state should be passed again to the provider in the POST to obtain the token
+# (this is not typical, and should be False in 99% of cases)
+OAUTH_STATE_PROVIDER_CHECK = False
 ```
 
 ## urls

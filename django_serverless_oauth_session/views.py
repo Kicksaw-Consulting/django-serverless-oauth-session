@@ -8,25 +8,35 @@ from django_serverless_oauth_session.oauth import (
 )
 from django_serverless_oauth_session.utils import get_optional_setting
 
+STATE_COOKIE_NAME = "django_serverless_oauth_session_state"
+
 
 def login(request):
     client = get_tokenless_oauth_session()
     redirect_uri = request.build_absolute_uri(reverse("sls-callback"))
-    uri, _ = client.create_authorization_url(
+    uri, state = client.create_authorization_url(
         settings.OAUTH_AUTHORIZE_URL, redirect_uri=redirect_uri
     )
-    return redirect(uri)
+    response = redirect(uri)
+    response.set_cookie(STATE_COOKIE_NAME, value=state)
+    return response
 
 
 def callback(request):
     client = get_tokenless_oauth_session()
-
     access_token_kwargs = get_optional_setting("OAUTH_ACCESS_TOKEN_KWARGS", default={})
+
+    state = request.COOKIES[STATE_COOKIE_NAME]
+
+    if get_optional_setting("OAUTH_STATE_CLIENT_CHECK", default=True):
+        assert request.GET["state"] == state, f"State mismatch"
+    if get_optional_setting("OAUTH_STATE_PROVIDER_CHECK", default=False):
+        access_token_kwargs["state"] = state
 
     token = client.fetch_token(
         settings.OAUTH_ACCESS_TOKEN_URL,
         authorization_response=request.build_absolute_uri(request),
-        **access_token_kwargs
+        **access_token_kwargs,
     )
 
     update_main_token(token)
