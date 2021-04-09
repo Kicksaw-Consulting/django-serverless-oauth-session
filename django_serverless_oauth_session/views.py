@@ -28,14 +28,12 @@ def callback(request):
 
     state = request.COOKIES[STATE_COOKIE_NAME]
 
-    if get_optional_setting("OAUTH_STATE_CLIENT_CHECK", default=True):
-        assert request.GET["state"] == state, f"State mismatch"
     if get_optional_setting("OAUTH_STATE_PROVIDER_CHECK", default=False):
         access_token_kwargs["state"] = state
 
     token = client.fetch_token(
         settings.OAUTH_ACCESS_TOKEN_URL,
-        authorization_response=request.build_absolute_uri(request),
+        authorization_response=request.build_absolute_uri(),
         **access_token_kwargs,
     )
 
