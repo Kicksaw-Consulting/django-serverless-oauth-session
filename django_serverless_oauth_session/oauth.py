@@ -1,6 +1,5 @@
 from django.conf import settings
 
-from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.integrations.requests_client import OAuth2Session
 
 from django_serverless_oauth_session.models import OAuthToken
@@ -56,26 +55,19 @@ def create_new(token: dict):
     pynamo_token.save()
 
 
-def get_tokenless_oauth_session(use_httpx=False):
+def get_tokenless_oauth_session():
     """
     Used for obtaining a token
     """
-    if use_httpx:
-        client = AsyncOAuth2Client(
-            settings.OAUTH_CLIENT_ID,
-            settings.OAUTH_CLIENT_SECRET,
-            scope=settings.OAUTH_SCOPE,
-        )
-    else:
-        client = OAuth2Session(
-            settings.OAUTH_CLIENT_ID,
-            settings.OAUTH_CLIENT_SECRET,
-            scope=settings.OAUTH_SCOPE,
-        )
+    client = OAuth2Session(
+        settings.OAUTH_CLIENT_ID,
+        settings.OAUTH_CLIENT_SECRET,
+        scope=settings.OAUTH_SCOPE,
+    )
     return client
 
 
-def get_oauth_session(token: dict = None, use_httpx=False):
+def get_oauth_session(token: dict = None):
     """
     Returns a requests session pre-loaded with the OAuth token for authentication
     """
@@ -83,6 +75,15 @@ def get_oauth_session(token: dict = None, use_httpx=False):
         fetched_token = fetch_token()
         token = fetched_token.session_data
 
+    session_kwargs = get_session_kwargs(token)
+
+    client = OAuth2Session(
+        settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
+    )
+    return client
+
+
+def get_session_kwargs(token: dict):
     session_kwargs = {
         "token": token,
         "update_token": update_main_token,
@@ -91,13 +92,4 @@ def get_oauth_session(token: dict = None, use_httpx=False):
 
     if get_optional_setting("OAUTH_INCLUDE_SCOPE_IN_REFRESH", default=False):
         session_kwargs["scope"] = settings.OAUTH_SCOPE
-
-    if use_httpx:
-        client = AsyncOAuth2Client(
-            settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
-        )
-    else:
-        client = OAuth2Session(
-            settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
-        )
-    return client
+    return session_kwargs
