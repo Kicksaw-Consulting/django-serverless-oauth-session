@@ -75,7 +75,7 @@ def get_tokenless_oauth_session(use_httpx=False):
     return client
 
 
-def get_oauth_session(token: dict = None):
+def get_oauth_session(token: dict = None, use_httpx=False):
     """
     Returns a requests session pre-loaded with the OAuth token for authentication
     """
@@ -92,7 +92,12 @@ def get_oauth_session(token: dict = None):
     if get_optional_setting("OAUTH_INCLUDE_SCOPE_IN_REFRESH", default=False):
         session_kwargs["scope"] = settings.OAUTH_SCOPE
 
-    client = OAuth2Session(
-        settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
-    )
+    if use_httpx:
+        client = AsyncOAuth2Client(
+            settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
+        )
+    else:
+        client = OAuth2Session(
+            settings.OAUTH_CLIENT_ID, settings.OAUTH_CLIENT_SECRET, **session_kwargs
+        )
     return client
